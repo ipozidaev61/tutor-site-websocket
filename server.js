@@ -1,54 +1,18 @@
-const path = require("path");
+//Load modules
+const telegraf = require('telegraf')
+//Create a Bot
+const bot = new telegraf('<BOT TOKEN HERE>')
 
-// Require the fastify framework and instantiate it
-const fastify = require("fastify")({
-  // set this to true for detailed logging:
-  logger: false,
+//Do something when start command was executed
+bot.start(ctx => {
+//Yes, you need callback son.
+
+//Send a message when /start command has executed
+ctx.reply('Hello, Human!');
+})
+
+//Launch the bot
+bot.launch().then(() => {
+        console.log("Logged as "+bot.context.botInfo.first_name)
+        //If it's shows your bot name, Then try execute /start Command, Enjoy!
 });
-
-// Setup our static files
-fastify.register(require("@fastify/static"), {
-  root: path.join(__dirname, "public"),
-  prefix: "/", // optional: default '/'
-});
-
-// fastify-formbody lets us parse incoming forms
-fastify.register(require("@fastify/formbody"));
-
-// point-of-view is a templating manager for fastify
-fastify.register(require("@fastify/view"), {
-  engine: {
-    handlebars: require("handlebars"),
-  },
-});
-
-// Our main GET home page route, pulls from src/pages/index.hbs
-fastify.get("/", function (request, reply) {
-  // params is an object we'll pass to our handlebars template
-  let params = {
-    greeting: "Hello Node!",
-  };
-  // request.query.paramName <-- a querystring example
-  return reply.view("/src/pages/index.hbs", params);
-});
-
-// A POST route to handle form submissions
-fastify.post("/", function (request, reply) {
-  let params = {
-    greeting: "Hello Form!",
-  };
-  // request.body.paramName <-- a form post example
-  return reply.view("/src/pages/index.hbs", params);
-});
-
-// Run the server and report out to the logs
-fastify.listen(
-  { port: process.env.PORT, host: "0.0.0.0" },
-  function (err, address) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-    console.log(`Your app is listening on ${address}`);
-  }
-);
