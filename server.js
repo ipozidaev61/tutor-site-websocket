@@ -1,18 +1,25 @@
-//Load modules
-const telegraf = require('telegraf')
-//Create a Bot
-const bot = new telegraf('<BOT TOKEN HERE>')
-
-//Do something when start command was executed
-bot.start(ctx => {
-//Yes, you need callback son.
-
-//Send a message when /start command has executed
-ctx.reply('Hello, Human!');
-})
-
-//Launch the bot
-bot.launch().then(() => {
-        console.log("Logged as "+bot.context.botInfo.first_name)
-        //If it's shows your bot name, Then try execute /start Command, Enjoy!
+import { createServer } from 'http';
+import staticHandler from 'serve-handler';
+import ws, { WebSocketServer } from 'ws';
+//serve static folder
+const server = createServer((req, res) => {   // (1)
+    return staticHandler(req, res, { public: 'public' })
 });
+const wss = new WebSocketServer({ server }) // (2)
+wss.on('connection', (client) => {
+    console.log('Client connected !')
+    client.on('message', (msg) => {    // (3)
+        console.log(`Message:${msg}`);
+        broadcast(msg)
+    })
+})
+function broadcast(msg) {       // (4)
+    for (const client of wss.clients) {
+        if (client.readyState === ws.OPEN) {
+            client.send(msg)
+        }
+    }
+}
+server.listen(process.argv[2] || 8080, () => {
+    console.log(`server listening...`);
+})
