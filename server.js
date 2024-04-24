@@ -5,7 +5,7 @@ import ws, { WebSocketServer } from 'ws';
 const server = createServer((req, res) => {   // (1)
     return staticHandler(req, res, { public: 'public' })
 });
-const wss = new WebSocketServer({ port: 3000 }) // (2)
+const wss = new WebSocketServer({ server }) // (2)
 wss.on('connection', (client) => {
     console.log('Client connected !')
     client.on('message', (msg) => {    // (3)
